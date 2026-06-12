@@ -20,7 +20,9 @@
   (declare-function flycheck-count-errors "flycheck")
   (declare-function flymake-diagnostics "flymake")
   (declare-function flymake-diagnostic-type "flymake")
+  (declare-function flymake--lookup-type-property "flymake")
   (declare-function flymake--publish-diagnostics "flymake")
+  (declare-function warning-numeric-level "warnings")
   (declare-function nerd-icons-codicon "nerd-icons")
   (defvar flycheck-mode)
   (defvar flycheck-current-errors)
@@ -157,10 +159,19 @@ is nil."
   "Recompute the diagnostics cache from the current flymake state."
   (setq sleek-modeline-diagnostics--cache
         (when (bound-and-true-p flymake-mode)
-          (let* ((diags (flymake-diagnostics))
-                 (errors (length (seq-filter (lambda (d) (eq (flymake-diagnostic-type d) :error)) diags)))
-                 (warnings (length (seq-filter (lambda (d) (eq (flymake-diagnostic-type d) :warning)) diags)))
-                 (infos (length (seq-filter (lambda (d) (eq (flymake-diagnostic-type d) :note)) diags))))
+          ;; Classify by severity rather than comparing types directly:
+          ;; backends may report custom type symbols (e.g. eglot's
+          ;; `eglot-error') instead of the standard :error/:warning/:note.
+          (let ((errors 0) (warnings 0) (infos 0))
+            (dolist (d (flymake-diagnostics))
+              (let ((severity (flymake--lookup-type-property
+                               (flymake-diagnostic-type d) 'severity
+                               (warning-numeric-level :error))))
+                (cond ((>= severity (warning-numeric-level :error))
+                       (setq errors (1+ errors)))
+                      ((>= severity (warning-numeric-level :warning))
+                       (setq warnings (1+ warnings)))
+                      (t (setq infos (1+ infos))))))
             (sleek-modeline-diagnostics--format errors warnings infos))))
   (force-mode-line-update))
 

@@ -61,11 +61,14 @@ explicitly assigned by `sleek-modeline' segments remain active."
   "Saved `mode-line-inactive' face attributes before sleek-modeline modified them.")
 
 (defvar sleek-modeline--default-mouse-events
-  '([mode-line down-mouse-1]
-    [mode-line mouse-1]
+  '([mode-line mouse-1]
     [mode-line mouse-2]
     [mode-line mouse-3])
-  "Mode-line mouse events whose default global bindings are suppressed.")
+  "Mode-line mouse events whose default global bindings are suppressed.
+Deliberately excludes `down-mouse-1', which is bound to
+`mouse-drag-mode-line' and is what lets the user resize a window by
+dragging its mode-line (the divider between stacked windows).
+Suppressing it would break drag-to-resize.")
 
 (defvar sleek-modeline--saved-mouse-bindings nil
   "Alist of (EVENT . BINDING) saved before suppressing default mouse events.")

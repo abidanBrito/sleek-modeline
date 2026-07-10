@@ -19,12 +19,12 @@
 ** DONE Segment registry [1/1] :core:
 - [X] Have segments auto-register.
 
-** TODO Miscellaneous [4/5] :misc:
+** DONE Miscellaneous [5/5] :misc:
 - [X] Global icon toggle.
 - [X] List minor modes when clicking on the major mode segment.
 - [X] Disable default mouse events.
 - [X] Segment tooltip hovers.
-- [ ] Hide inactive modelines mode.
+- [X] Hide inactive modelines mode.
 
 ** DONE CI checks [2/2] :ci:
 - [X] Add melpazoid workflow.

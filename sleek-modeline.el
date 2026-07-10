@@ -95,7 +95,7 @@ Suppressing it would break drag-to-resize.")
                         (concat result ,suffix)))
                  `(,fn)))
          (form (if cond-var `(when ,cond-var ,core) core)))
-    `(:eval ,form)))
+    `(:eval (unless (sleek-modeline--hide-inactive-p) ,form))))
 
 (defun sleek-modeline--build-format ()
   "Rebuild `sleek-modeline-format' from the segment registry."
@@ -109,11 +109,13 @@ Suppressing it would break drag-to-resize.")
                       by-priority)))
     (setq sleek-modeline-format
           `("%e"
-            (:eval (make-string sleek-modeline-edge-padding ?\s))
+            (:eval (unless (sleek-modeline--hide-inactive-p)
+                     (make-string sleek-modeline-edge-padding ?\s)))
             ,@(mapcar #'sleek-modeline--segment-eval-form left)
             mode-line-format-right-align
             ,@(mapcar #'sleek-modeline--segment-eval-form right)
-            (:eval (make-string sleek-modeline-edge-padding ?\s))))))
+            (:eval (unless (sleek-modeline--hide-inactive-p)
+                     (make-string sleek-modeline-edge-padding ?\s)))))))
 
 (defun sleek-modeline--suppress-default-mouse ()
   "Disable Emacs' default mode-line mouse actions and echo area hints.

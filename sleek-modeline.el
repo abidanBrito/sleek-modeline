@@ -247,7 +247,6 @@ we read `(face-background \='default ...)'."
 	(sleek-modeline--refresh-disabled-modes)
 
 	;; Update faces after a theme change
-        (add-hook 'after-load-theme-hook #'sleek-modeline--update-faces)
         (advice-add 'load-theme :after #'sleek-modeline--after-theme-change)
         (advice-add 'enable-theme :after #'sleek-modeline--after-theme-change)
 
@@ -294,7 +293,6 @@ we read `(face-background \='default ...)'."
              sleek-modeline--saved-modeline-inactive-attrs))
 
     ;; Remove hooks and advices added by sleek-modeline
-    (remove-hook 'after-load-theme-hook #'sleek-modeline--update-faces)
     (remove-hook 'server-after-make-frame-hook
                  #'sleek-modeline--deferred-face-update)
     (remove-hook 'after-make-frame-functions

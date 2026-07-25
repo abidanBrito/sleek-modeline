@@ -85,6 +85,9 @@ Suppressing it would break drag-to-resize.")
 (defvar sleek-modeline--default-mode-line mode-line-format
   "Storage for the default `mode-line-format'.")
 
+(defvar sleek-modeline--adopted-buffers nil
+  "Alist of (BUFFER . FORMAT) for buffers adopted on activation.")
+
 (defun sleek-modeline--segment-eval-form (seg)
   "Return an (:eval ...) mode-line form for segment SEG."
   (let* ((fn (plist-get seg :fn))
@@ -119,6 +122,29 @@ Suppressing it would break drag-to-resize.")
             ,@(mapcar #'sleek-modeline--segment-eval-form right)
             (:eval (unless (sleek-modeline--hide-inactive-p)
                      (make-string sleek-modeline-edge-padding ?\s)))))))
+
+(defun sleek-modeline--adopt-stale-buffers (stale)
+  "Drop buffer-local `mode-line-format' values that are equal to STALE."
+  (setq sleek-modeline--adopted-buffers nil)
+  (when stale
+    (dolist (buffer (buffer-list))
+      (with-current-buffer buffer
+        (when (and (local-variable-p 'mode-line-format)
+                   (not sleek-modeline--modeline-hidden)
+                   (equal mode-line-format stale))
+          (push (cons buffer mode-line-format) sleek-modeline--adopted-buffers)
+          (kill-local-variable 'mode-line-format))))))
+
+(defun sleek-modeline--restore-adopted-buffers ()
+  "Reinstate the buffer-local formats removed on activation.
+This undoes `sleek-modeline--adopt-stale-buffers' so that every buffer
+remains as it is when the mode is turned off."
+  (dolist (entry sleek-modeline--adopted-buffers)
+    (let ((buffer (car entry)))
+      (when (buffer-live-p buffer)
+        (with-current-buffer buffer
+          (setq-local mode-line-format (cdr entry))))))
+  (setq sleek-modeline--adopted-buffers nil))
 
 (defun sleek-modeline--suppress-default-mouse ()
   "Disable Emacs' default mode-line mouse actions and echo area hints.
@@ -237,6 +263,9 @@ we read `(face-background \='default ...)'."
 	;; Apply `sleek-modeline' format
         (setq-default mode-line-format sleek-modeline-format)
 
+	;; Take over any buffers that are stuck on a stale buffer-local format
+	(sleek-modeline--adopt-stale-buffers sleek-modeline--default-mode-line)
+
 	;; Suppress Emacs' default mode-line mouse actions
 	(when sleek-modeline-suppress-default-mouse
 	  (sleek-modeline--suppress-default-mouse))
@@ -273,6 +302,7 @@ we read `(face-background \='default ...)'."
 
     ;; Restore original format, faces & mouse behaviour
     (setq-default mode-line-format sleek-modeline--default-mode-line)
+    (sleek-modeline--restore-adopted-buffers)
 
     (remove-hook 'after-change-major-mode-hook
                  #'sleek-modeline--apply-disabled-mode)

@@ -127,6 +127,7 @@ All options live under =M-x customize-group RET sleek-modeline=. Here are the ma
 | =sleek-modeline-separator=                      | =" » "=   | Separator string between right-side segments.                        |
 | =sleek-modeline-suppress-default-mouse=         | =t=       | Disable Emacs' stock mode-line mouse actions and echo-area hints, keeping only the segment bindings sleek-modeline adds. |
 | =sleek-modeline-disabled-modes=                 | =nil=     | List of major modes for which the mode-line is hidden. Matches with =derived-mode-p=, so descendant modes are also covered.  |
+| =sleek-modeline-use-delight-for-major-mode=     | =nil=     | Allow using the customised major mode name from  =delight=           |
 
 ** Inactive mode-line
 
@@ -163,7 +164,7 @@ Top-level switches for optional segments. Disabling one prevents its package fro
 | =sleek-modeline-vc-use-github-icon=     | =nil=   | Use the GitHub mark icon instead of the git branch icon.              |
 | =sleek-modeline-vc-show-status-symbol=  | =t=     | Append a symbol indicating VC state: =~= modified, =+= added, =-= removed, =!= conflict, =↓= needs update, =?= unregistered. |
 | =sleek-modeline-hide-vc-icon-inactive=  | =nil=   | Hide the VC icon in inactive mode-lines.                              |
-| =sleek-modeline-hide-vc-branch-inactive=| =nil=   | Hide the VC branch name in inactive mode-lines.                       |
+| =sleek-modeline-hide-vc-branch-inactive= | =nil=   | Hide the VC branch name in inactive mode-lines.                       |
 
 *** Diagnostics
 

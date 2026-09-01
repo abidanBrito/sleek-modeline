@@ -72,7 +72,7 @@ Checks `evil-mode' first, then `meow-mode'.  Returns nil if neither is active."
   "Return a propertized, modal state marker with state-dependent background.
 In inactive mode-lines, dim the badge background (keeping the foreground),
 or hide it entirely when `sleek-modeline-hide-modal-inactive' is non-nil."
-  (when-let ((state (sleek-modeline--modal-state)))
+  (when-let* ((state (sleek-modeline--modal-state)))
     (let ((inactive (sleek-modeline--inactive-p)))
       (unless (and inactive sleek-modeline-hide-modal-inactive)
         (let* ((base-face (pcase state

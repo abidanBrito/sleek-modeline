@@ -4,7 +4,7 @@
 
 ;; Author: Abidán Brito Clavijo <abidan.brito@gmail.com>
 ;; Version: 1.0
-;; Package-Requires: ((emacs "29.1"))
+;; Package-Requires: ((emacs "30.1"))
 ;; Keywords: mode-line, faces
 ;; URL: https://github.com/abidanBrito/sleek-modeline
 ;; SPDX-License-Identifier: MIT
@@ -94,7 +94,7 @@ Suppressing it would break drag-to-resize.")
                    (let ((suffix (if (eq sep t)
                                      '(sleek-modeline--separator)
                                    sep)))
-                     `(when-let ((result (,fn)))
+                     `(when-let* ((result (,fn)))
                         (concat result ,suffix)))
                  `(,fn)))
          (form (if cond-var `(when ,cond-var ,core) core)))
@@ -247,7 +247,6 @@ we read `(face-background \='default ...)'."
 	(sleek-modeline--refresh-disabled-modes)
 
 	;; Update faces after a theme change
-        (add-hook 'after-load-theme-hook #'sleek-modeline--update-faces)
         (advice-add 'load-theme :after #'sleek-modeline--after-theme-change)
         (advice-add 'enable-theme :after #'sleek-modeline--after-theme-change)
 
@@ -294,7 +293,6 @@ we read `(face-background \='default ...)'."
              sleek-modeline--saved-modeline-inactive-attrs))
 
     ;; Remove hooks and advices added by sleek-modeline
-    (remove-hook 'after-load-theme-hook #'sleek-modeline--update-faces)
     (remove-hook 'server-after-make-frame-hook
                  #'sleek-modeline--deferred-face-update)
     (remove-hook 'after-make-frame-functions

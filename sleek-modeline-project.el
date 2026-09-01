@@ -58,7 +58,8 @@ Prefers `projectile' when active, falls back to `project.el'.
     (when-let* ((project (project-current))
                 (root (project-root project)))
       (list :backend "Project.el"
-            :name (file-name-nondirectory (directory-file-name root))
+            :name (or (and (boundp 'project-vc-name) project-vc-name)
+                      (file-name-nondirectory (directory-file-name root)))
             :root root)))))
 
 (defun sleek-modeline-project ()

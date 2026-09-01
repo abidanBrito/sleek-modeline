@@ -26,14 +26,11 @@ Each entry is a plist with keys.
   :on-enable  symbol - Function called when `sleek-modeline-mode' activates.
   :on-disable symbol - Function called when `sleek-modeline-mode' deactivates.")
 
-(defun sleek-modeline-register-segment (name &rest props)
-  "Register a segment under NAME with the given PROPS plist.
-If a segment with NAME already exists it is replaced.
-See `sleek-modeline--segment-registry' for valid keys."
-  (setq sleek-modeline--segment-registry
-        (cons (append (list :name name) props)
-              (seq-remove (lambda (s) (eq (plist-get s :name) name))
-                          sleek-modeline--segment-registry))))
+(defvar sleek-modeline--face-retry-count 0
+  "Number of consecutive deferred `sleek-modeline--update-faces' retries.")
+
+(defconst sleek-modeline--face-retry-max 20
+  "Maximum number of times to retry `sleek-modeline--update-faces'.")
 
 (defvar-local sleek-modeline--modeline-hidden nil
   "Non-nil when `sleek-modeline' hid the mode-line in the current buffer.")
@@ -125,6 +122,15 @@ this list, `sleek-modeline' removes the mode-line for that buffer."
   "Face for the separator between segments in `sleek-modeline'."
   :group 'sleek-modeline-faces)
 
+(defun sleek-modeline-register-segment (name &rest props)
+  "Register a segment under NAME with the given PROPS plist.
+If a segment with NAME already exists it is replaced.
+See `sleek-modeline--segment-registry' for valid keys."
+  (setq sleek-modeline--segment-registry
+        (cons (append (list :name name) props)
+              (seq-remove (lambda (s) (eq (plist-get s :name) name))
+                          sleek-modeline--segment-registry))))
+
 (defun sleek-modeline--get-height ()
   "Get mode-line height based on `sleek-modeline-size' or `sleek-modeline-height'.
 Returns the box line-width value to use for the mode-line."
@@ -134,42 +140,58 @@ Returns the box line-width value to use for the mode-line."
         ('medium 5)
         ('large 10))))
 
+(defun sleek-modeline--schedule-face-retry ()
+  "Re-run `sleek-modeline--update-faces' shortly on a timer.
+Used when the `default' background is not yet a real colour, so the faces
+cannot be derived.  Retries a bounded number of times to avoid looping
+forever on frames that fail to realise a background."
+  (when (< sleek-modeline--face-retry-count sleek-modeline--face-retry-max)
+    (cl-incf sleek-modeline--face-retry-count)
+    (run-with-idle-timer 0.15 nil #'sleek-modeline--update-faces)))
+
 (defun sleek-modeline--update-faces ()
   "Update mode-line face attributes based on current height settings.
-Derives mode-line backgrounds by darkening the current `default' face,
-ensuring the modeline is always visually distinct from buffer content."
+When `sleek-modeline-background' is explicitly defined, the value is
+used for the active mode-line.  Otherwise the mode-line backgrounds are
+derived by darkening the current `default' face, ensuring the modeline
+is always visually distinct from buffer content."
   (let* ((modeline-height (sleek-modeline--get-height))
          ;; NOTE(abi): `face-background' can return nil or unspecified-bg on terminal frames
-         ;;            or before a theme has set the default face.  We filter those out so
-         ;;            that colour blending functions never receive unparsable input.
+         ;;            or before a theme has set the default face.
          (raw-background (or sleek-modeline-background
-                             (face-background 'default nil t)))
-         (default-background (if (sleek-modeline--valid-color-p raw-background)
-                                 raw-background
-                               "#000000"))
-         (modeline-background (sleek-modeline--darken default-background 0.30))
-         (modeline-inactive-background (if sleek-modeline-hide-inactive
-                                           default-background
-                                         (sleek-modeline--darken default-background 0.15))))
-    (when (facep 'mode-line)
-      (set-face-attribute 'mode-line nil
-                          :background modeline-background
-                          :box `(:line-width ,modeline-height :color ,modeline-background)
-                          :underline nil))
+                             (face-background 'default nil t))))
 
-    (when (facep 'mode-line-active)
-      (set-face-attribute 'mode-line-active nil
-                          :background modeline-background
-                          :box `(:line-width ,modeline-height :color ,modeline-background)
-                          :underline nil))
+    (if (not (sleek-modeline--valid-color-p raw-background))
+        (sleek-modeline--schedule-face-retry)
+      (setq sleek-modeline--face-retry-count 0)
+      (let* ((default-background raw-background)
+             (modeline-background (if sleek-modeline-background
+                                      default-background
+                                    (sleek-modeline--darken default-background 0.30)))
 
-    (when (facep 'mode-line-inactive)
-      (set-face-attribute 'mode-line-inactive nil
-                          :background modeline-inactive-background
-                          :box `(:line-width ,modeline-height :color ,modeline-inactive-background)
-                          :underline nil))
-    (sleek-modeline--update-separator-face)
-    (force-mode-line-update t)))
+             (modeline-inactive-background (if sleek-modeline-hide-inactive
+                                               default-background
+                                             (sleek-modeline--darken default-background 0.15))))
+
+        (when (facep 'mode-line)
+          (set-face-attribute 'mode-line nil
+                              :background modeline-background
+                              :box `(:line-width ,modeline-height :color ,modeline-background)
+                              :underline nil))
+
+        (when (facep 'mode-line-active)
+          (set-face-attribute 'mode-line-active nil
+                              :background modeline-background
+                              :box `(:line-width ,modeline-height :color ,modeline-background)
+                              :underline nil))
+
+        (when (facep 'mode-line-inactive)
+          (set-face-attribute 'mode-line-inactive nil
+                              :background modeline-inactive-background
+                              :box `(:line-width ,modeline-height :color ,modeline-inactive-background)
+                              :underline nil))
+        (sleek-modeline--update-separator-face)
+        (force-mode-line-update t)))))
 
 (defun sleek-modeline--separator ()
   "Return the propertized segment separator."

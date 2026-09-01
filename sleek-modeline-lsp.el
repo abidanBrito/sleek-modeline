@@ -80,7 +80,7 @@ falls back to `sleek-modeline-lsp-symbol'."
              (eglot-managed-p)
              (fboundp 'eglot-current-server)
              (fboundp 'jsonrpc-name))
-    (when-let ((server (eglot-current-server)))
+    (when-let* ((server (eglot-current-server)))
       (let ((full-name (jsonrpc-name server)))
         (if (string-match "/\\([^/]+\\))\\'" full-name)
             (match-string 1 full-name)
@@ -92,7 +92,7 @@ falls back to `sleek-modeline-lsp-symbol'."
              (bound-and-true-p lsp-mode)
              (fboundp 'lsp-workspaces)
              (fboundp 'lsp--workspace-server-id))
-    (when-let ((workspaces (lsp-workspaces)))
+    (when-let* ((workspaces (lsp-workspaces)))
       (mapconcat (lambda (ws) (symbol-name (lsp--workspace-server-id ws)))
                  workspaces ","))))
 

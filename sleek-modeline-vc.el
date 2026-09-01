@@ -85,7 +85,7 @@ Implements the `vc-post-command-functions' abnormal hook signature."
   (let ((files (if (listp file-or-list) file-or-list (list file-or-list))))
     (dolist (file files)
       (when (stringp file)
-        (when-let ((buf (find-buffer-visiting (expand-file-name file))))
+        (when-let* ((buf (find-buffer-visiting (expand-file-name file))))
           (with-current-buffer buf
             (sleek-modeline-vc--invalidate-cache)))))))
 
@@ -169,7 +169,7 @@ command fails."
 Shows the VC backend and, for Git, the commit counts relative to the
 upstream branch."
   (with-current-buffer (window-buffer window)
-    (when-let ((backend (and buffer-file-name (vc-backend buffer-file-name))))
+    (when-let* ((backend (and buffer-file-name (vc-backend buffer-file-name))))
       (let ((name (propertize (symbol-name backend)
                               'face 'sleek-modeline-vc-face)))
         (if (not (eq backend 'Git)) name
@@ -186,7 +186,7 @@ The branch name and icon use the mode-line foreground.
 The status symbol is state-coloured and leads the segment when present.
 Returns nil if not in a version-controlled file or if an error occurs."
   (condition-case nil
-      (when-let ((branch (sleek-modeline-vc--branch-name)))
+      (when-let* ((branch (sleek-modeline-vc--branch-name)))
         (let* ((symbol (sleek-modeline-vc--status-symbol))
                (branch-str (propertize branch
                                        'face 'sleek-modeline-vc-face

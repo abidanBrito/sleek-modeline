@@ -13,6 +13,9 @@
 
 (require 'sleek-modeline-core)
 
+;; Tell the byte-compiler this is a dynamic variable from delight.
+(defvar delight-mode-name-inhibit)
+
 (defvar sleek-modeline--major-mode-keymap
   (let ((map (make-sparse-keymap)))
     (define-key map [mode-line down-mouse-1] #'sleek-modeline--minor-modes-menu)
@@ -21,6 +24,13 @@
 
 (defcustom sleek-modeline-hide-major-mode-inactive nil
   "Hide the major mode name in inactive modelines."
+  :type 'boolean
+  :group 'sleek-modeline)
+
+(defcustom sleek-modeline-use-delight-for-major-mode nil
+  "When non-nil, use `delight's substituted name for the major mode.
+When nil (the default), show the raw major mode name, bypassing any
+`delight' customisation."
   :type 'boolean
   :group 'sleek-modeline)
 
@@ -63,9 +73,15 @@ Selecting an entry describes that minor mode."
   "Show major mode with custom face, stripping mode-line suffix indicators.
 Clicking the segment pops up a menu of the active minor modes.
 Optionally dim or hide in inactive mode-lines."
-  (let ((name (replace-regexp-in-string
-               "/.*\\'" ""
-               (substring-no-properties (format-mode-line mode-name)))))
+  (let* ((raw (if sleek-modeline-use-delight-for-major-mode
+                  ;; Bind to nil to allow delight's substituted name through
+                  (let ((delight-mode-name-inhibit nil))
+                    (format-mode-line mode-name))
+                ;; Default: just call format-mode-line normally (delight suppressed by its own advice)
+                (format-mode-line mode-name)))
+         (name (replace-regexp-in-string
+                "/.*\\'" ""
+                (substring-no-properties raw))))
     (sleek-modeline--maybe-dim-or-hide
      (propertize name
                  'face 'sleek-modeline-major-mode-face

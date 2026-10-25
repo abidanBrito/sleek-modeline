@@ -9,7 +9,9 @@
 [[https://stable.melpa.org/#/sleek-modeline][file:https://stable.melpa.org/packages/sleek-modeline-badge.svg]]
 [[https://github.com/abidanBrito/sleek-modeline/blob/main/LICENSE][file:https://img.shields.io/badge/License-MIT-orange.svg]]
 
-The default Emacs mode-line is functional but visually dated and hard to configure. =sleek-modeline= replaces it with a minimal, elegant alternative that surfaces the most relevant information while keeping the implementation small and straightforward.
+The default Emacs mode-line is functional but visually dated and hard to configure. =sleek-modeline= replaces it with a minimal, elegant alternative built from a fixed set of /segments/ (buffer name, major mode, version control, diagnostics, project, LSP, and so on).
+
+Nothing is chosen for you at runtime: the default segments are fixed, modelled on what most modern editors show. Each one can be toggled, reconfigured, reordered, or replaced. You may also [[#Extending][register your own]].
 
 [[file:assets/sleek_modeline_screenshot.png]]
 

@@ -12,6 +12,12 @@
 
 (require 'sleek-modeline-core)
 
+(defvar sleek-modeline-encoding--keymap
+  (let ((map (make-sparse-keymap)))
+    (define-key map [mode-line down-mouse-1] #'sleek-modeline-encoding--set-coding-system)
+    map)
+  "Keymap active on the encoding segment of `sleek-modeline'.")
+
 (defcustom sleek-modeline-hide-encoding-inactive nil
   "Hide the encoding indicator in inactive modelines."
   :type 'boolean
@@ -33,6 +39,11 @@ encodings are worth surfacing."
   '((t (:inherit sleek-modeline-encoding-face :underline t)))
   "Face used to highlight the encoding segment on mouse hover."
   :group 'sleek-modeline-faces)
+
+(defun sleek-modeline-encoding--set-coding-system ()
+  "Run `set-buffer-file-coding-system' for the clicked buffer."
+  (interactive "@")
+  (call-interactively #'set-buffer-file-coding-system))
 
 (defun sleek-modeline--encoding ()
   "Return (SHORT . LONG) descriptions of the buffer's coding system.
@@ -59,7 +70,8 @@ Dim or hide in inactive mode-lines according to configuration."
          (propertize short
                      'face 'sleek-modeline-encoding-face
                      'mouse-face 'sleek-modeline-encoding-highlight-face
-                     'help-echo (concat "Encoding: " long))
+                     'help-echo (concat "Encoding: " long)
+                     'local-map sleek-modeline-encoding--keymap)
          sleek-modeline-hide-encoding-inactive)))))
 
 (sleek-modeline-register-segment 'encoding

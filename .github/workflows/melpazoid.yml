@@ -1,22 +1,32 @@
 name: Melpazoid
-on: [push, pull_request]
+
+on: [push, pull_request, workflow_dispatch]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
+  melpazoid:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
+    - name: Checkout repository
     - uses: actions/checkout@v6
-    - name: Set up Python
+
+    - name: Set up Python 3.x
       uses: actions/setup-python@v6
-      with: { python-version: '3.10' }
-    - name: Install
+      with: { python-version: '3.x' }
+
+    - name: Install melpazoid
       run: |
         sudo apt-get install emacs && emacs --version
-        git clone https://github.com/riscy/melpazoid.git ~/melpazoid
-    - name: Run
+        git clone --depth 1 https://github.com/riscy/melpazoid.git ~/melpazoid
+
+    - name: Run melpazoid
       env:
         LOCAL_REPO: ${{ github.workspace }}
         RECIPE: (sleek-modeline :fetcher github :repo "abidanBrito/sleek-modeline")
+        EXIST_OK: true
         WARN_IS_ERROR: true
-        EXIST_OK: false
-      run: echo $GITHUB_REF && make -C ~/melpazoid
+      run: make -C ~/melpazoid

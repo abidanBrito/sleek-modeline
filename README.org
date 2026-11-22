@@ -2,9 +2,9 @@
 #+author: Abidán Brito Clavijo
 #+email: abidan.brito@gmail.com
 
-[[https://github.com/abidanBrito/sleek-modeline/actions/workflows/compile.yml][file:https://github.com/abidanBrito/sleek-modeline/actions/workflows/compile.yml/badge.svg]]
+[[https://github.com/abidanBrito/sleek-modeline/actions/workflows/ci.yml][file:https://github.com/abidanBrito/sleek-modeline/actions/workflows/ci.yml/badge.svg]]
 [[https://github.com/abidanBrito/sleek-modeline/actions/workflows/melpazoid.yml][file:https://github.com/abidanBrito/sleek-modeline/actions/workflows/melpazoid.yml/badge.svg]]
-[[https://img.shields.io/badge/GNU_Emacs-29.1%2B-blueviolet.svg]]
+[[https://img.shields.io/badge/GNU_Emacs-30.1%2B-blueviolet.svg]]
 [[https://melpa.org/#/sleek-modeline][file:https://melpa.org/packages/sleek-modeline-badge.svg]]
 [[https://stable.melpa.org/#/sleek-modeline][file:https://stable.melpa.org/packages/sleek-modeline-badge.svg]]
 [[https://github.com/abidanBrito/sleek-modeline/blob/main/LICENSE][file:https://img.shields.io/badge/License-MIT-orange.svg]]
@@ -72,8 +72,6 @@ Using =use-package='s built-in =:vc= keyword (Emacs 30.1+):
     :config
     (sleek-modeline-mode 1))
 #+end_src
-
-On Emacs 29, fetch the same recipe with =M-x package-vc-install RET https://github.com/abidanBrito/sleek-modeline RET=.
 
 Or with [[https://github.com/radian-software/straight.el][=straight.el=]]:
 

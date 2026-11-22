@@ -239,7 +239,7 @@ Call this once inside `sleek-modeline-mode' activation."
     (add-hook 'flymake-mode-hook
               #'sleek-modeline-diagnostics--flymake-mode-hook)
     (advice-add 'flymake--publish-diagnostics :after
-		#'sleek-modeline-diagnostics--flymake-update)))
+                #'sleek-modeline-diagnostics--flymake-update)))
 
 (defun sleek-modeline-diagnostics-disable ()
   "Disable diagnostics segment integration.
@@ -262,13 +262,13 @@ This ensures no buffer-local hooks or cached state remain."
           (sleek-modeline-diagnostics--flymake-teardown))))))
 
 (sleek-modeline-register-segment 'diagnostics
-				 :fn 'sleek-modeline-diagnostics
-				 :side 'right
-				 :priority 0
-				 :separator t
-				 :condition 'sleek-modeline-enable-diagnostics
-				 :on-enable 'sleek-modeline-diagnostics-enable
-				 :on-disable 'sleek-modeline-diagnostics-disable)
+                                 :fn 'sleek-modeline-diagnostics
+                                 :side 'right
+                                 :priority 0
+                                 :separator t
+                                 :condition 'sleek-modeline-enable-diagnostics
+                                 :on-enable 'sleek-modeline-diagnostics-enable
+                                 :on-disable 'sleek-modeline-diagnostics-disable)
 
 (provide 'sleek-modeline-diagnostics)
 ;;; sleek-modeline-diagnostics.el ends here

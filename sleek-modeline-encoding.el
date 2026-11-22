@@ -85,10 +85,10 @@ Dim or hide in inactive mode-lines according to configuration."
          sleek-modeline-hide-encoding-inactive)))))
 
 (sleek-modeline-register-segment 'encoding
-				 :fn 'sleek-modeline-encoding-indicator
-				 :side 'right
-				 :priority 11
-				 :separator t)
+                                 :fn 'sleek-modeline-encoding-indicator
+                                 :side 'right
+                                 :priority 11
+                                 :separator t)
 
 (provide 'sleek-modeline-encoding)
 ;;; sleek-modeline-encoding.el ends here

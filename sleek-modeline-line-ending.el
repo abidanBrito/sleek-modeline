@@ -66,10 +66,10 @@ Dim or hide in inactive mode-lines according to configuration."
        sleek-modeline-hide-line-ending-inactive))))
 
 (sleek-modeline-register-segment 'line-ending
-				 :fn 'sleek-modeline-line-ending-indicator
-				 :side 'right
-				 :priority 10
-				 :separator t)
+                                 :fn 'sleek-modeline-line-ending-indicator
+                                 :side 'right
+                                 :priority 10
+                                 :separator t)
 
 (provide 'sleek-modeline-line-ending)
 ;;; sleek-modeline-line-ending.el ends here

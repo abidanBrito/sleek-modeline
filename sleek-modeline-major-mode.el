@@ -63,10 +63,10 @@ Selecting an entry describes that minor mode."
       ;; NOTE(abi): `define-key' prepends, so we walk the list in reverse.
       (dolist (mode (reverse modes))
         (define-key map (vector mode)
-		    `(menu-item ,(symbol-name mode)
-				(lambda ()
-				  (interactive)
-				  (describe-minor-mode-from-symbol ',mode)))))
+                    `(menu-item ,(symbol-name mode)
+                                (lambda ()
+                                  (interactive)
+                                  (describe-minor-mode-from-symbol ',mode)))))
       (popup-menu map event))))
 
 (defun sleek-modeline-major-mode ()
@@ -93,9 +93,9 @@ Optionally dim or hide in inactive mode-lines."
      sleek-modeline-hide-major-mode-inactive)))
 
 (sleek-modeline-register-segment 'major-mode
-				 :fn 'sleek-modeline-major-mode
-				 :side 'right
-				 :priority 40)
+                                 :fn 'sleek-modeline-major-mode
+                                 :side 'right
+                                 :priority 40)
 
 (provide 'sleek-modeline-major-mode)
 ;;; sleek-modeline-major-mode.el ends here

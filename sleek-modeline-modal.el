@@ -88,10 +88,10 @@ or hide it entirely when `sleek-modeline-hide-modal-inactive' is non-nil."
           (propertize (format " %s " state) 'face face))))))
 
 (sleek-modeline-register-segment 'modal-state
-				 :fn 'sleek-modeline-modal-state-marker
-				 :side 'left
-				 :priority 0
-				 :separator " ")
+                                 :fn 'sleek-modeline-modal-state-marker
+                                 :side 'left
+                                 :priority 0
+                                 :separator " ")
 
 (provide 'sleek-modeline-modal)
 ;;; sleek-modeline-modal.el ends here

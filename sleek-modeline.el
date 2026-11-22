@@ -200,7 +200,7 @@ we read `(face-background \\='default ...)'."
   :group 'sleek-modeline
   (if sleek-modeline-mode
       (progn
-	;; Load optional modules so they self-register before building the format
+        ;; Load optional modules so they self-register before building the format
         (when sleek-modeline-enable-diagnostics
           (require 'sleek-modeline-diagnostics nil t))
         (when sleek-modeline-enable-project
@@ -208,50 +208,50 @@ we read `(face-background \\='default ...)'."
         (when sleek-modeline-enable-lsp
           (require 'sleek-modeline-lsp nil t))
 
-	;; Build the format from the segment registry
+        ;; Build the format from the segment registry
         (sleek-modeline--build-format)
 
-	;; Save original format & face attributes
-	(unless (equal (default-value 'mode-line-format) sleek-modeline-format)
-	  (setq sleek-modeline--default-mode-line
-		(default-value 'mode-line-format))
+        ;; Save original format & face attributes
+        (unless (equal (default-value 'mode-line-format) sleek-modeline-format)
+          (setq sleek-modeline--default-mode-line
+                (default-value 'mode-line-format))
 
           (setq sleek-modeline--saved-modeline-attrs
-		(list :background (face-attribute 'mode-line :background nil t)
+                (list :background (face-attribute 'mode-line :background nil t)
                       :box (face-attribute 'mode-line :box nil t)
                       :underline (face-attribute 'mode-line :underline nil t)
                       :overline (face-attribute 'mode-line :overline nil t)))
 
           (when (facep 'mode-line-active)
             (setq sleek-modeline--saved-modeline-active-attrs
-		  (list :background (face-attribute 'mode-line-active :background nil t)
+                  (list :background (face-attribute 'mode-line-active :background nil t)
                         :box (face-attribute 'mode-line-active :box nil t)
                         :underline (face-attribute 'mode-line-active :underline nil t)
                         :overline (face-attribute 'mode-line-active :overline nil t))))
 
           (setq sleek-modeline--saved-modeline-inactive-attrs
-		(list :background (face-attribute 'mode-line-inactive :background nil t)
+                (list :background (face-attribute 'mode-line-inactive :background nil t)
                       :box (face-attribute 'mode-line-inactive :box nil t)
                       :underline (face-attribute 'mode-line-inactive :underline nil t)
                       :overline (face-attribute 'mode-line-inactive :overline nil t))))
 
-	;; Apply `sleek-modeline' format
+        ;; Apply `sleek-modeline' format
         (setq-default mode-line-format sleek-modeline-format)
 
-	;; Suppress Emacs' default mode-line mouse actions
-	(when sleek-modeline-suppress-default-mouse
-	  (sleek-modeline--suppress-default-mouse))
+        ;; Suppress Emacs' default mode-line mouse actions
+        (when sleek-modeline-suppress-default-mouse
+          (sleek-modeline--suppress-default-mouse))
 
-	;; Hide the mode-line in user-listed major modes
-	(add-hook 'after-change-major-mode-hook
-		  #'sleek-modeline--apply-disabled-mode)
-	(sleek-modeline--refresh-disabled-modes)
+        ;; Hide the mode-line in user-listed major modes
+        (add-hook 'after-change-major-mode-hook
+                  #'sleek-modeline--apply-disabled-mode)
+        (sleek-modeline--refresh-disabled-modes)
 
-	;; Update faces after a theme change
+        ;; Update faces after a theme change
         (advice-add 'load-theme :after #'sleek-modeline--after-theme-change)
         (advice-add 'enable-theme :after #'sleek-modeline--after-theme-change)
 
-	;; Activate registered segments
+        ;; Activate registered segments
         (dolist (seg sleek-modeline--segment-registry)
           (let ((condition (plist-get seg :condition))
                 (on-enable (plist-get seg :on-enable)))
@@ -259,18 +259,18 @@ we read `(face-background \\='default ...)'."
                        (or (null condition) (symbol-value condition)))
               (funcall on-enable))))
 
-	;; Update faces now if a real (non-daemon-initial) frame exists,
-	;; otherwise defer the first update until a client frame shows up
-	;;
-	;; IMPORTANT(abi): this fixes a daemon-startup colour bug where faces were
-	;;                 computed against the initial frame's unthemed `default'
-	;;                 background, leaving the wrong face until a server restart.
-	(if (sleek-modeline--graphical-frame-exists-p)
-	    (sleek-modeline--update-faces)
-	  (add-hook 'server-after-make-frame-hook
-		    #'sleek-modeline--deferred-face-update)
-	  (add-hook 'after-make-frame-functions
-		    #'sleek-modeline--deferred-face-update)))
+        ;; Update faces now if a real (non-daemon-initial) frame exists,
+        ;; otherwise defer the first update until a client frame shows up
+        ;;
+        ;; IMPORTANT(abi): this fixes a daemon-startup colour bug where faces were
+        ;;                 computed against the initial frame's unthemed `default'
+        ;;                 background, leaving the wrong face until a server restart.
+        (if (sleek-modeline--graphical-frame-exists-p)
+            (sleek-modeline--update-faces)
+          (add-hook 'server-after-make-frame-hook
+                    #'sleek-modeline--deferred-face-update)
+          (add-hook 'after-make-frame-functions
+                    #'sleek-modeline--deferred-face-update)))
 
     ;; Restore original format, faces & mouse behaviour
     (setq-default mode-line-format sleek-modeline--default-mode-line)

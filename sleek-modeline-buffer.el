@@ -80,9 +80,9 @@ the mode-line is inactive according to configuration."
     (if icon (concat icon " " buffer-name) buffer-name)))
 
 (sleek-modeline-register-segment 'buffer-name
-				 :fn 'sleek-modeline-buffer-name
-				 :side 'left
-				 :priority 20)
+                                 :fn 'sleek-modeline-buffer-name
+                                 :side 'left
+                                 :priority 20)
 
 (provide 'sleek-modeline-buffer)
 ;;; sleek-modeline-buffer.el ends here

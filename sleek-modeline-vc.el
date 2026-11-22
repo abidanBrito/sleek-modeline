@@ -192,7 +192,7 @@ Returns nil if not in a version-controlled file or if an error occurs."
                (branch-str (propertize branch
                                        'face 'sleek-modeline-vc-face
                                        'mouse-face '(:inherit sleek-modeline-vc-face
-							      :underline t)))
+                                                              :underline t)))
                (icon (let ((raw (sleek-modeline-vc--branch-icon)))
                        (when raw
                          (let ((fg (face-foreground 'mode-line nil t)))
@@ -233,12 +233,12 @@ Call this once inside `sleek-modeline-mode' activation."
         (setq sleek-modeline-vc--state-cache 'unset)))))
 
 (sleek-modeline-register-segment 'vc
-				 :fn 'sleek-modeline-vc
-				 :side 'right
-				 :priority 20
-				 :separator t
-				 :on-enable 'sleek-modeline-vc-enable
-				 :on-disable 'sleek-modeline-vc-disable)
+                                 :fn 'sleek-modeline-vc
+                                 :side 'right
+                                 :priority 20
+                                 :separator t
+                                 :on-enable 'sleek-modeline-vc-enable
+                                 :on-disable 'sleek-modeline-vc-disable)
 
 (provide 'sleek-modeline-vc)
 ;;; sleek-modeline-vc.el ends here

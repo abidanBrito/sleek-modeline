@@ -67,25 +67,25 @@ Prefers `projectile' when active, falls back to `project.el'.
 The hover tooltip shows the active backend and the project root."
   (condition-case nil
       (when-let* ((info (sleek-modeline-project--info)))
-	(sleek-modeline--maybe-dim-or-hide
-	 (propertize (plist-get info :name)
-		     'face 'sleek-modeline-project-face
-		     'mouse-face 'sleek-modeline-project-highlight-face
-		     'help-echo (format "%s :: %s"
-					(propertize (plist-get info :backend)
-						    'face 'sleek-modeline-project-face)
-					(abbreviate-file-name
-					 (directory-file-name
-					  (plist-get info :root)))))
-	 sleek-modeline-hide-project-name-inactive))
+        (sleek-modeline--maybe-dim-or-hide
+         (propertize (plist-get info :name)
+                     'face 'sleek-modeline-project-face
+                     'mouse-face 'sleek-modeline-project-highlight-face
+                     'help-echo (format "%s :: %s"
+                                        (propertize (plist-get info :backend)
+                                                    'face 'sleek-modeline-project-face)
+                                        (abbreviate-file-name
+                                         (directory-file-name
+                                          (plist-get info :root)))))
+         sleek-modeline-hide-project-name-inactive))
     (error nil)))
 
 (sleek-modeline-register-segment 'project
-				 :fn 'sleek-modeline-project
-				 :side 'left
-				 :priority 10
-				 :separator t
-				 :condition 'sleek-modeline-enable-project)
+                                 :fn 'sleek-modeline-project
+                                 :side 'left
+                                 :priority 10
+                                 :separator t
+                                 :condition 'sleek-modeline-enable-project)
 
 (provide 'sleek-modeline-project)
 ;;; sleek-modeline-project.el ends here

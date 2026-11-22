@@ -34,7 +34,7 @@ You don't have to type everything yourself, but you should understand and stand 
 
 * Development setup
 
-You will need GNU Emacs 29.1 or newer and optionally [[https://github.com/casey/just][just]].
+You will need GNU Emacs 30.1 or newer and optionally [[https://github.com/casey/just][just]].
 
 Clone your fork and create a branch off =develop=:
 

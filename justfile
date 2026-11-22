@@ -1,64 +1,59 @@
-# justfile
+pkg := "sleek-modeline"
 
-pkg     := "sleek-modeline"
-emacs   := env_var_or_default("EMACS", "emacs")
-files	:= `find . -maxdepth 1 -name '*.el' ! -name '*-autoloads.el' | sort | tr '\n' ' '`
-batch   := emacs + " -Q --batch -L ."
+emacs := env_var_or_default("EMACS", "emacs")
+elpa-dir  := justfile_directory() / ".local-elpa"
 
-# Cache for lint dependencies
-lint_dir := justfile_directory() + "/.elpa-lint"
+tools := "package-lint relint"
+pkg-init := "(progn (setq package-user-dir \"" + elpa-dir + "\") (require (quote package)) (add-to-list (quote package-archives) (cons \"melpa\" \"https://melpa.org/packages/\") t) (package-initialize))"
+
+batch  := emacs + " -Q --batch -L ."
+ebatch := batch + " --eval '" + pkg-init + "'"
+
+source-files := `find . -maxdepth 1 -name '*.el' ! -name '*-autoloads.el' ! -name '.dir-locals.el' | sort | tr '\n' ' '`
 
 @_default:
     just --list
 
+# Run every check, like CI does
+all: build lint relint
+
 # Build everything
 build: compile autoloads
 
-# Byte-compile all .el files
+# Byte-compile all source files
 compile:
     @{{batch}} --eval "(setq byte-compile-error-on-warn t)" \
-        -f batch-byte-compile {{files}}
+    -f batch-byte-compile {{source-files}}
 
-# Generate autoloads file
+# Generate the autoloads file
 autoloads:
-    @{{batch}} --eval "(require 'loaddefs-gen)" \
-        --eval "(loaddefs-generate default-directory \
-                  (expand-file-name \"{{pkg}}-autoloads.el\"))"
+    @{{batch}} --eval "(let ((out (expand-file-name \"{{pkg}}-autoloads.el\"))) \
+    (cond ((require 'loaddefs-gen nil t) \
+    (loaddefs-generate default-directory out)) \
+    ((fboundp 'make-directory-autoloads) \
+    (make-directory-autoloads default-directory out)) \
+    (t (message \"Skipping autoloads: unsupported Emacs version\"))))"
 
-# Verify declare-function correctness
-check:
-    @{{batch}} --eval "(check-declare-directory default-directory)"
+# Lint against MELPA rules
+lint: _tools
+    @{{ebatch}} --eval "(setq package-lint-main-file \"{{pkg}}.el\")" \
+    -f package-lint-batch-and-exit {{source-files}}
 
-# Check documentation strings
-checkdoc:
+# Check regular expressions and docstring escapes
+relint: _tools
+    @{{ebatch}} -l relint -f relint-batch {{source-files}}
+
+# Install lint tooling
+_tools:
     #!/usr/bin/env bash
     set -euo pipefail
-    status=0
-    for f in {{files}}; do
-        out=$({{batch}} --eval "(checkdoc-file \"$f\")" 2>&1 || true)
-        if [ -n "$out" ]; then
-            printf '%s\n' "$out"
-            status=1
-        fi
-    done
-    if [ "$status" -eq 0 ]; then echo "checkdoc: clean"; fi
-    exit "$status"
+    stamp="{{elpa-dir}}/.tools-installed"
+    if [ -f "$stamp" ]; then exit 0; fi
+    {{ebatch}} --eval '(package-refresh-contents)' \
+    --eval '(dolist (p (quote ({{tools}}))) (unless (package-installed-p p) (package-install p)))'
+    touch "$stamp"
 
-# Lint all .el files
-lint:
-    @{{batch}} \
-        --eval "(setq package-user-dir \"{{lint_dir}}\")" \
-        --eval "(require 'package)" \
-        --eval "(add-to-list 'package-archives '(\"melpa\" . \"https://melpa.org/packages/\") t)" \
-        --eval "(package-initialize)" \
-        --eval "(unless (package-installed-p 'package-lint) \
-                  (package-refresh-contents) \
-                  (package-install 'package-lint))" \
-        --eval "(require 'package-lint)" \
-        --eval "(setq package-lint-main-file \"{{pkg}}.el\")" \
-        -f package-lint-batch-and-exit {{files}}
-
-# Wipe build artifacts & lint dependency cache
+# Remove all build artifacts
 clean:
-    @rm -f *.elc {{pkg}}-autoloads.el
-    @rm -rf {{lint_dir}}
+    @rm -f ./*.elc {{pkg}}-autoloads.el
+    @rm -rf {{elpa-dir}}

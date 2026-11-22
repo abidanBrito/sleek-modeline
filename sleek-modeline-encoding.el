@@ -41,7 +41,9 @@ SHORT is the compact segment label; LONG is the full name for the hover tooltip.
          (category (plist-get (coding-system-plist coding-system) :category)))
     (cons (if (eq category 'coding-category-utf-8)
               "UTF-8"
-            (upcase (symbol-name (coding-system-base coding-system))))
+            (let ((name (upcase (symbol-name (coding-system-base coding-system)))))
+              (string-replace "-AUTO" " AUTO"
+                              (string-replace "-WITH-SIGNATURE" " BOM" name))))
           (symbol-name coding-system))))
 
 (defun sleek-modeline-encoding-indicator ()

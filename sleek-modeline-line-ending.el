@@ -12,6 +12,12 @@
 
 (require 'sleek-modeline-core)
 
+(defvar sleek-modeline-line-ending--keymap
+  (let ((map (make-sparse-keymap)))
+    (define-key map [mode-line down-mouse-1] #'sleek-modeline-line-ending--toggle)
+    map)
+  "Keymap active on the line ending segment of `sleek-modeline'.")
+
 (defcustom sleek-modeline-hide-line-ending-inactive nil
   "Hide the line ending style in inactive modelines."
   :type 'boolean
@@ -26,6 +32,16 @@
   '((t (:inherit sleek-modeline-line-ending-face :underline t)))
   "Face used to highlight the line ending segment on mouse hover."
   :group 'sleek-modeline-faces)
+
+(defun sleek-modeline-line-ending--toggle ()
+  "Toggle line endings between LF and CRLF for the clicked buffer."
+  (interactive "@")
+  (set-buffer-file-coding-system
+   (coding-system-change-eol-conversion
+    buffer-file-coding-system
+    (if (eq (coding-system-eol-type buffer-file-coding-system) 0)
+        'dos
+      'unix))))
 
 (defun sleek-modeline--line-ending ()
   "Return (SHORT . LONG) descriptions of the buffer's line ending convention.
@@ -45,7 +61,8 @@ Dim or hide in inactive mode-lines according to configuration."
        (propertize (car style)
                    'face 'sleek-modeline-line-ending-face
                    'mouse-face 'sleek-modeline-line-ending-highlight-face
-                   'help-echo (concat "Line endings: " (cdr style)))
+                   'help-echo (concat "Line endings: " (cdr style))
+                   'local-map sleek-modeline-line-ending--keymap)
        sleek-modeline-hide-line-ending-inactive))))
 
 (sleek-modeline-register-segment 'line-ending

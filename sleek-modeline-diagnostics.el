@@ -36,7 +36,7 @@ Used as a sentinel to ensure hooks are only installed once.")
 
 (defvar sleek-modeline-diagnostics--keymap
   (let ((map (make-sparse-keymap)))
-    (define-key map [mode-line down-mouse-1] #'sleek-modeline-diagnostics-list)
+    (define-key map [mode-line mouse-1] #'sleek-modeline-diagnostics-list)
     map)
   "Keymap active on the diagnostics segment of `sleek-modeline'.")
 

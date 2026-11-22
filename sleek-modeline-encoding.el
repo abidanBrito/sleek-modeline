@@ -14,7 +14,7 @@
 
 (defvar sleek-modeline-encoding--keymap
   (let ((map (make-sparse-keymap)))
-    (define-key map [mode-line down-mouse-1] #'sleek-modeline-encoding--set-coding-system)
+    (define-key map [mode-line mouse-1] #'sleek-modeline-encoding--set-coding-system)
     map)
   "Keymap active on the encoding segment of `sleek-modeline'.")
 

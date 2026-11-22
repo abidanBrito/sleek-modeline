@@ -14,7 +14,7 @@
 
 (defvar sleek-modeline-line-ending--keymap
   (let ((map (make-sparse-keymap)))
-    (define-key map [mode-line down-mouse-1] #'sleek-modeline-line-ending--toggle)
+    (define-key map [mode-line mouse-1] #'sleek-modeline-line-ending--toggle)
     map)
   "Keymap active on the line ending segment of `sleek-modeline'.")
 

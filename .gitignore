@@ -2,5 +2,5 @@
 /sleek-modeline-autoloads.el
 *.elc
 
-# Cache for lint dependencies
-/.elpa-lint
+# Local package directory (dev & test dependencies)
+/.local-elpa

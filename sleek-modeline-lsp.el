@@ -21,10 +21,10 @@
 (eval-when-compile
   (declare-function eglot-current-server "eglot")
   (declare-function eglot-managed-p "eglot")
-  (declare-function jsonrpc-name "jsonrpc")
-  (declare-function lsp-workspaces "lsp-mode")
-  (declare-function lsp--workspace-server-id "lsp-mode")
-  (declare-function nerd-icons-faicon "nerd-icons")
+  (declare-function jsonrpc-name "jsonrpc" t t)
+  (declare-function lsp-workspaces "ext:lsp-mode")
+  (declare-function lsp--workspace-server-id "ext:lsp-mode")
+  (declare-function nerd-icons-faicon "ext:nerd-icons")
   (defvar eglot--managed-mode)
   (defvar lsp-mode))
 

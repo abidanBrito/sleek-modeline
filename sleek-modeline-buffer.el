@@ -14,7 +14,7 @@
 (require 'sleek-modeline-core)
 
 ;; NOTE(abi): optional dependency; only gets loaded if available.
-(declare-function nerd-icons-icon-for-file "nerd-icons")
+(declare-function nerd-icons-icon-for-file "ext:nerd-icons")
 
 (defcustom sleek-modeline-highlight-modified-buffer-name t
   "Whether to highlight the buffer name when it has unsaved changes.

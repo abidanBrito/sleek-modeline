@@ -17,15 +17,15 @@
 ;;
 ;; NOTE(abi): these get loaded only if available.
 (eval-when-compile
-  (declare-function flycheck-count-errors "flycheck")
-  (declare-function flycheck-list-errors "flycheck")
+  (declare-function flycheck-count-errors "ext:flycheck")
+  (declare-function flycheck-list-errors "ext:flycheck")
   (declare-function flymake-diagnostics "flymake")
-  (declare-function flymake-diagnostic-type "flymake")
+  (declare-function flymake-diagnostic-type "flymake" t t)
   (declare-function flymake--lookup-type-property "flymake")
   (declare-function flymake--publish-diagnostics "flymake")
   (declare-function flymake-show-buffer-diagnostics "flymake")
   (declare-function warning-numeric-level "warnings")
-  (declare-function nerd-icons-codicon "nerd-icons")
+  (declare-function nerd-icons-codicon "ext:nerd-icons")
   (defvar flycheck-mode)
   (defvar flycheck-current-errors)
   (defvar flymake-mode))

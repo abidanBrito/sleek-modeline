@@ -15,8 +15,8 @@
 
 ;; NOTE(abi): optional dependencies, declared to silence the byte-compiler.
 (eval-when-compile
-  (declare-function projectile-project-name "projectile")
-  (declare-function projectile-project-root "projectile")
+  (declare-function projectile-project-name "ext:projectile")
+  (declare-function projectile-project-root "ext:projectile")
   (declare-function project-current "project")
   (declare-function project-root "project")
   (defvar projectile-mode))

@@ -16,7 +16,7 @@
 (require 'sleek-modeline-core)
 
 ;; NOTE(abi): optional dependency; only gets loaded if available.
-(declare-function nerd-icons-octicon "nerd-icons")
+(declare-function nerd-icons-octicon "ext:nerd-icons")
 
 (defcustom sleek-modeline-vc-show-icon t
   "Whether to show the branch icon in the version control segment.
@@ -191,7 +191,7 @@ Returns nil if not in a version-controlled file or if an error occurs."
                (branch-str (propertize branch
                                        'face 'sleek-modeline-vc-face
                                        'mouse-face '(:inherit sleek-modeline-vc-face
-                                                     :underline t)))
+							      :underline t)))
                (icon (let ((raw (sleek-modeline-vc--branch-icon)))
                        (when raw
                          (let ((fg (face-foreground 'mode-line nil t)))

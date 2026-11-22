@@ -156,9 +156,10 @@ command fails."
     (let ((dir default-directory))
       (with-temp-buffer
         (setq default-directory dir)
-        (when (eq 0 (ignore-errors
-                      (process-file "git" nil t nil "rev-list"
-                                    "--count" "--left-right" "@{upstream}...HEAD")))
+        (when (eq 0 (condition-case nil
+                        (process-file "git" nil t nil "rev-list"
+                                      "--count" "--left-right" "@{upstream}...HEAD")
+                      (file-error nil)))
           (goto-char (point-min))
           (when (looking-at "\\([0-9]+\\)[ \t]+\\([0-9]+\\)")
             (cons (string-to-number (match-string 1))

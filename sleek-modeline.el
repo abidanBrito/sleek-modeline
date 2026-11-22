@@ -20,6 +20,7 @@
 (require 'sleek-modeline-major-mode)
 (require 'sleek-modeline-modal)
 (require 'sleek-modeline-line-ending)
+(require 'sleek-modeline-encoding)
 (require 'sleek-modeline-vc)
 
 

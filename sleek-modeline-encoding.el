@@ -1,0 +1,70 @@
+;;; sleek-modeline-encoding.el --- Buffer encoding segment for sleek-modeline -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2026 Abidán Brito Clavijo
+;; Author: Abidán Brito Clavijo <abidan.brito@gmail.com>
+;; SPDX-License-Identifier: MIT
+
+;;; Commentary:
+;; Buffer encoding segment for the `sleek-modeline' package.  Displays the
+;; coding system of the current buffer (file-backed buffers only).
+
+;;; Code:
+
+(require 'sleek-modeline-core)
+
+(defcustom sleek-modeline-hide-encoding-inactive nil
+  "Hide the encoding indicator in inactive modelines."
+  :type 'boolean
+  :group 'sleek-modeline)
+
+(defcustom sleek-modeline-encoding-hide-utf-8 nil
+  "When non-nil, suppress the encoding segment for UTF-8 and undecided buffers.
+Since most files are UTF-8, hiding it reduces clutter when only non-standard
+encodings are worth surfacing."
+  :type 'boolean
+  :group 'sleek-modeline)
+
+(defface sleek-modeline-encoding-face
+  '((t (:inherit font-lock-doc-face :slant normal)))
+  "Face for the buffer encoding indicator in `sleek-modeline'."
+  :group 'sleek-modeline-faces)
+
+(defface sleek-modeline-encoding-highlight-face
+  '((t (:inherit sleek-modeline-encoding-face :underline t)))
+  "Face used to highlight the encoding segment on mouse hover."
+  :group 'sleek-modeline-faces)
+
+(defun sleek-modeline--encoding ()
+  "Return (SHORT . LONG) descriptions of the buffer's coding system.
+SHORT is the compact segment label; LONG is the full name for the hover tooltip."
+  (let* ((coding-system buffer-file-coding-system)
+         (category (plist-get (coding-system-plist coding-system) :category)))
+    (cons (if (eq category 'coding-category-utf-8)
+              "UTF-8"
+            (upcase (symbol-name (coding-system-base coding-system))))
+          (symbol-name coding-system))))
+
+(defun sleek-modeline-encoding-indicator ()
+  "Return a propertized encoding string for file-backed buffers, or nil.
+Dim or hide in inactive mode-lines according to configuration."
+  (when buffer-file-name
+    (let* ((encoding-pair (sleek-modeline--encoding))
+           (short (car encoding-pair))
+           (long (cdr encoding-pair)))
+      (unless (and sleek-modeline-encoding-hide-utf-8
+                   (string= short "UTF-8"))
+        (sleek-modeline--maybe-dim-or-hide
+         (propertize short
+                     'face 'sleek-modeline-encoding-face
+                     'mouse-face 'sleek-modeline-encoding-highlight-face
+                     'help-echo (concat "Encoding: " long))
+         sleek-modeline-hide-encoding-inactive)))))
+
+(sleek-modeline-register-segment 'encoding
+				 :fn 'sleek-modeline-encoding-indicator
+				 :side 'right
+				 :priority 11
+				 :separator t)
+
+(provide 'sleek-modeline-encoding)
+;;; sleek-modeline-encoding.el ends here

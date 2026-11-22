@@ -24,9 +24,16 @@
   :group 'sleek-modeline)
 
 (defcustom sleek-modeline-encoding-hide-utf-8 nil
-  "When non-nil, suppress the encoding segment for UTF-8 and undecided buffers.
+  "When non-nil, suppress the encoding segment for UTF-8 buffers.
 Since most files are UTF-8, hiding it reduces clutter when only non-standard
 encodings are worth surfacing."
+  :type 'boolean
+  :group 'sleek-modeline)
+
+(defcustom sleek-modeline-encoding-hide-undecided nil
+  "When non-nil, suppress the encoding segment for undecided buffers.
+This covers plain ASCII files, whose encoding cannot be detected, and
+`prefer-utf-8'."
   :type 'boolean
   :group 'sleek-modeline)
 
@@ -64,8 +71,11 @@ Dim or hide in inactive mode-lines according to configuration."
     (let* ((encoding-pair (sleek-modeline--encoding))
            (short (car encoding-pair))
            (long (cdr encoding-pair)))
-      (unless (and sleek-modeline-encoding-hide-utf-8
-                   (string= short "UTF-8"))
+      (unless (or (and sleek-modeline-encoding-hide-utf-8
+                       (string= short "UTF-8"))
+                  (and sleek-modeline-encoding-hide-undecided
+                       (eq (coding-system-category buffer-file-coding-system)
+                           'coding-category-undecided)))
         (sleek-modeline--maybe-dim-or-hide
          (propertize short
                      'face 'sleek-modeline-encoding-face

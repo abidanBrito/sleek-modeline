@@ -7,13 +7,13 @@ This document describes how to contribute to =sleek-modeline= and what is expect
 
 1. *Open an issue first* for anything non-trivial. Don't send a feature out of the blue (simple fixes are exempt, see below).
 2. Agree on the design in that thread.
-3. Fork, branch, implement and *test* your change.
+3. Fork, branch off =main=, implement and *test* your change.
 4. Make sure it byte-compiles and lints cleanly.
-5. Open a pull request against =develop=, linking back to the issue in question (if it applies).
+5. Open a pull request against =main=, linking back to the issue in question (if it applies).
 
 * Open an issue before a pull request
 
-Please, for anything touching behaviour or API design, start with an issue. This is not bureaucracy for its own sake; it lets us settle design and style questions up front, so nobody spends time on a patch or a feature only to have it turned down over something that could have been sorted out in a couple comments.
+Please, for anything touching behaviour or API design, start with an issue. This is not bureaucracy for its own sake; it lets us settle design and style questions up front, so nobody spends time on a patch or a feature only to have it turned down over something that could have been sorted out in a couple of comments.
 
 - *Bugs* - Open a [[https://github.com/abidanBrito/sleek-modeline/issues/new?template=bug_report.yml][bug report]].
 - *Features / ideas* - Open a [[https://github.com/abidanBrito/sleek-modeline/issues/new?template=feature_request.yml][feature request]].
@@ -34,26 +34,39 @@ You don't have to type everything yourself, but you should understand and stand 
 
 * Development setup
 
-You will need GNU Emacs 30.1 or newer and optionally [[https://github.com/casey/just][just]].
+You will need GNU Emacs 30.1 or newer, [[https://github.com/casey/just][just]], and optionally [[https://pre-commit.com/][pre-commit]].
 
-Clone your fork and create a branch off =develop=:
+Clone your fork and create a branch off =main=. Prefix the branch with its type, e.g. =feature/=, =fix/= or =docs/=:
 
 #+begin_src sh
   git clone https://github.com/abidanBrito/sleek-modeline.git
   cd sleek-modeline
-  git checkout develop
-  git checkout -b my-branch
+  git checkout -b feature/my-change
 #+end_src
 
-The =justfile= bundles common tasks. Run =just= on its own to list them. Before pushing, your change should pass at least:
+The =justfile= bundles the common tasks. Run =just= on its own to list them.
+
+Before pushing, your change should pass at least:
 
 #+begin_src sh
   just build
-  just lint
   just checkdoc
+  just check-declare
+  just lint
+  just relint
 #+end_src
 
-There is also a [[https://pre-commit.com/][pre-commit]] configuration. Installing it with =pre-commit install= will catch trailing whitespace, parenthesis mismatches and byte-compile errors automatically.
+=just all= runs all of them in one go, like CI does.
+
+#+begin_quote
+*Note:* the first run installs the lint dependencies into a local =.local-elpa/= directory, so a fresh checkout needs nothing but Emacs and =just=.
+#+end_quote
+
+Installing the =pre-commit= hooks wires both the commit-time and push-time checks:
+
+#+begin_src sh
+  pre-commit install
+#+end_src
 
 * Coding style
 
@@ -76,9 +89,10 @@ For visual changes, include before & after screenshots in the pull request.
 
 - Use the prefixes defined by the [[https://www.conventionalcommits.org/][Conventional Commits]] specification.
 - Use the imperative mood and a short, lower-case summary line, e.g. =fix: update flymake integration=.
-- Whenever possible keep commits atomic; focused on a single logical change.
+- Whenever possible, keep commits atomic; focused on a single logical change.
 
-Note that both =main= and =develop= are protected, so all changes land
-through a reviewed pull request. Fill in the template and tick the checklist honestly.
+#+begin_quote
+*Note:* =main= is protected, so all changes land through a reviewed pull request. Fill in the template and tick the checklist honestly.
+#+end_quote
 
 Thanks for contributing to =sleek-modeline=!

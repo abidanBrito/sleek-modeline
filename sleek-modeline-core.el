@@ -19,7 +19,8 @@ Each entry is a plist with keys.
   :name       symbol - Unique segment identifier.
   :fn         symbol - Display function (returns string or nil).
   :side       `left' or `right'.
-  :priority   integer - Lower means closer to the outer edge.
+  :priority   integer - Lower means further left, on either side.  Segments are
+              sorted ascending within their side.
   :separator  nil | t | STRING - nil: no suffix; t: standard separator;
               string: literal string to append after a non-nil result.
   :condition  symbol - Variable that must be non-nil to display the segment.

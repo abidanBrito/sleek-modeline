@@ -46,6 +46,12 @@ Displayed when `nerd-icons' is not available or icons are disabled."
   :type 'boolean
   :group 'sleek-modeline)
 
+(defcustom sleek-modeline-lsp-collapse-names nil
+  "When non-nil, show only the first LSP server name plus a count.
+Only relevant when `sleek-modeline-lsp-show-name' is non-nil."
+  :type 'boolean
+  :group 'sleek-modeline)
+
 (defcustom sleek-modeline-hide-lsp-inactive nil
   "Hide the LSP indicator in inactive modelines."
   :type 'boolean
@@ -82,27 +88,34 @@ falls back to `sleek-modeline-lsp-symbol'."
       full-name)))
 
 (defun sleek-modeline-lsp--lsp-mode-server-names ()
-  "Return a display name for the active lsp-mode server/s, or nil."
+  "Return a list of names for the active lsp-mode servers, or nil."
   (when-let* (((bound-and-true-p lsp-mode))
               (workspaces (bound-and-true-p lsp--buffer-workspaces)))
-    (mapconcat (lambda (ws) (symbol-name (lsp--workspace-server-id ws)))
-               workspaces ", ")))
+    (mapcar (lambda (ws) (symbol-name (lsp--workspace-server-id ws)))
+            workspaces)))
 
-(defun sleek-modeline-lsp--server-name ()
-  "Return the active LSP server name for the current buffer, or nil."
-  (or (sleek-modeline-lsp--eglot-server-name)
+(defun sleek-modeline-lsp--server-names ()
+  "Return the active LSP server names for the current buffer, or nil."
+  (or (ensure-list (sleek-modeline-lsp--eglot-server-name))
       (sleek-modeline-lsp--lsp-mode-server-names)))
+
+(defun sleek-modeline-lsp--display-names (names)
+  "Return the modeline text for server NAMES.
+Honors `sleek-modeline-lsp-collapse-names'."
+  (if (and sleek-modeline-lsp-collapse-names (cdr names))
+      (format "%s [%d]" (car names) (length names))
+    (string-join names ", ")))
 
 (defun sleek-modeline-lsp--format ()
   "Build the propertized LSP indicator string."
   (let* ((icon (sleek-modeline-lsp--icon))
-         (server-name (sleek-modeline-lsp--server-name))
-         (text (if (and sleek-modeline-lsp-show-name server-name)
-                   (concat icon " " server-name)
+         (names (sleek-modeline-lsp--server-names))
+         (text (if (and sleek-modeline-lsp-show-name names)
+                   (concat icon " " (sleek-modeline-lsp--display-names names))
                  icon))
          (lsp-label (propertize "LSP" 'face 'sleek-modeline-lsp-face))
-         (tooltip (if server-name
-                      (concat lsp-label " :: " server-name)
+         (tooltip (if names
+                      (concat lsp-label " :: " (string-join names ", "))
                     lsp-label)))
     (propertize text 'face 'sleek-modeline-lsp-face 'help-echo tooltip)))
 

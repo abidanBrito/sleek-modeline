@@ -20,9 +20,7 @@
 ;; NOTE(abi): these get loaded only if available.
 (eval-when-compile
   (declare-function eglot-current-server "eglot")
-  (declare-function eglot-managed-p "eglot")
   (declare-function jsonrpc-name "jsonrpc" t t)
-  (declare-function lsp-workspaces "ext:lsp-mode")
   (declare-function lsp--workspace-server-id "ext:lsp-mode")
   (declare-function nerd-icons-faicon "ext:nerd-icons")
   (defvar eglot--managed-mode)
@@ -76,16 +74,12 @@ falls back to `sleek-modeline-lsp-symbol'."
 
 (defun sleek-modeline-lsp--eglot-server-name ()
   "Return a short display name for the active eglot server, or nil."
-  (when (and (featurep 'eglot)
-             (fboundp 'eglot-managed-p)
-             (eglot-managed-p)
-             (fboundp 'eglot-current-server)
-             (fboundp 'jsonrpc-name))
-    (when-let* ((server (eglot-current-server)))
-      (let ((full-name (jsonrpc-name server)))
-        (if (string-match "/\\([^/]+\\))\\'" full-name)
-            (match-string 1 full-name)
-          full-name)))))
+  (when-let* (((bound-and-true-p eglot--managed-mode))
+              (server (eglot-current-server))
+              (full-name (jsonrpc-name server)))
+    (if (string-match "/\\([^/]+\\))\\'" full-name)
+        (match-string 1 full-name)
+      full-name)))
 
 (defun sleek-modeline-lsp--lsp-mode-server-names ()
   "Return a display name for the active lsp-mode server/s, or nil."
@@ -115,8 +109,7 @@ falls back to `sleek-modeline-lsp-symbol'."
 (defun sleek-modeline-lsp--eglot-update (&rest _)
   "Recompute the LSP cache from the current eglot state."
   (setq sleek-modeline-lsp--cache
-        (when (and (featurep 'eglot)
-                   (bound-and-true-p eglot--managed-mode))
+        (when (bound-and-true-p eglot--managed-mode)
           (sleek-modeline-lsp--format)))
   (force-mode-line-update))
 
@@ -126,8 +119,7 @@ Accepts any number of args so it can be used on both normal hooks
 and abnormal hooks (like `lsp-after-uninitialized-functions',
 which passes a workspace argument)."
   (setq sleek-modeline-lsp--cache
-        (when (and (featurep 'lsp-mode)
-                   (bound-and-true-p lsp-mode)
+        (when (and (bound-and-true-p lsp-mode)
                    (bound-and-true-p lsp--buffer-workspaces))
           (sleek-modeline-lsp--format)))
   (force-mode-line-update))
@@ -165,10 +157,7 @@ the user having to restart the server."
         (cond
          ((bound-and-true-p eglot--managed-mode)
           (sleek-modeline-lsp--eglot-update))
-         ((and (bound-and-true-p lsp-mode)
-               (featurep 'lsp-mode)
-               (fboundp 'lsp-workspaces)
-               (lsp-workspaces))
+         ((bound-and-true-p lsp-mode)
           (sleek-modeline-lsp--lsp-mode-update)))))))
 
 (defun sleek-modeline-lsp-disable ()

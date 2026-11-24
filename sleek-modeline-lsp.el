@@ -26,6 +26,7 @@
   (declare-function lsp--workspace-server-id "ext:lsp-mode")
   (declare-function nerd-icons-faicon "ext:nerd-icons")
   (defvar eglot--managed-mode)
+  (defvar lsp--buffer-workspaces)
   (defvar lsp-mode))
 
 (defvar sleek-modeline-lsp--enabled nil
@@ -89,9 +90,9 @@ falls back to `sleek-modeline-lsp-symbol'."
 (defun sleek-modeline-lsp--lsp-mode-server-names ()
   "Return a display name for the active lsp-mode server/s, or nil."
   (when-let* (((bound-and-true-p lsp-mode))
-              (workspaces (lsp-workspaces)))
+              (workspaces (bound-and-true-p lsp--buffer-workspaces)))
     (mapconcat (lambda (ws) (symbol-name (lsp--workspace-server-id ws)))
-               workspaces ",")))
+               workspaces ", ")))
 
 (defun sleek-modeline-lsp--server-name ()
   "Return the active LSP server name for the current buffer, or nil."
@@ -127,7 +128,7 @@ which passes a workspace argument)."
   (setq sleek-modeline-lsp--cache
         (when (and (featurep 'lsp-mode)
                    (bound-and-true-p lsp-mode)
-                   (lsp-workspaces))
+                   (bound-and-true-p lsp--buffer-workspaces))
           (sleek-modeline-lsp--format)))
   (force-mode-line-update))
 

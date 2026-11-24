@@ -86,20 +86,17 @@ falls back to `sleek-modeline-lsp-symbol'."
             (match-string 1 full-name)
           full-name)))))
 
-(defun sleek-modeline-lsp--lsp-mode-server-name ()
+(defun sleek-modeline-lsp--lsp-mode-server-names ()
   "Return a display name for the active lsp-mode server/s, or nil."
-  (when (and (featurep 'lsp-mode)
-             (bound-and-true-p lsp-mode)
-             (fboundp 'lsp-workspaces)
-             (fboundp 'lsp--workspace-server-id))
-    (when-let* ((workspaces (lsp-workspaces)))
-      (mapconcat (lambda (ws) (symbol-name (lsp--workspace-server-id ws)))
-                 workspaces ","))))
+  (when-let* (((bound-and-true-p lsp-mode))
+              (workspaces (lsp-workspaces)))
+    (mapconcat (lambda (ws) (symbol-name (lsp--workspace-server-id ws)))
+               workspaces ",")))
 
 (defun sleek-modeline-lsp--server-name ()
   "Return the active LSP server name for the current buffer, or nil."
   (or (sleek-modeline-lsp--eglot-server-name)
-      (sleek-modeline-lsp--lsp-mode-server-name)))
+      (sleek-modeline-lsp--lsp-mode-server-names)))
 
 (defun sleek-modeline-lsp--format ()
   "Build the propertized LSP indicator string."
